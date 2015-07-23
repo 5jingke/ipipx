@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net"
+	"fmt"
 )
 
 const Null = "N/A"
@@ -76,6 +77,7 @@ type LocationInfo struct {
 	Region  string
 	City    string
 	Isp     string
+	CountryCode string
 }
 
 // Find locationInfo by ip string
@@ -93,11 +95,12 @@ func (loc *Locator) Find(ipstr string) (info *LocationInfo, err error) {
 // Find locationInfo by uint32
 func (loc *Locator) FindByUint(ip uint32) (info *LocationInfo) {
 	end := len(loc.indexData1) - 1
-	if ip>>24 != 0xff {
-		end = loc.index[(ip>>24)+1]
+	if ip>>16 != 0xff {
+		end = loc.index[(ip>>16)+1]
 	}
-	idx := loc.findIndexOffset(ip, loc.index[ip>>24], end)
+	idx := loc.findIndexOffset(ip, loc.index[ip>>16], end)
 	off := loc.indexData2[idx]
+	fmt.Println("found: idx=", idx, "off=", off, "->", loc.indexData3[idx])
 	return newLocationInfo(loc.textData[off : off+loc.indexData3[idx]])
 }
 
@@ -121,26 +124,30 @@ func (loc *Locator) findIndexOffset(ip uint32, start, end int) int {
 
 func (loc *Locator) init(data []byte) {
 	textoff := int(binary.BigEndian.Uint32(data[:4]))
+	fmt.Println("textoff=", textoff)
 
-	loc.textData = data[textoff-1024:]
+	loc.textData = data[textoff-262144:]
 
-	loc.index = make([]int, 256)
-	for i := 0; i < 256; i++ {
+	loc.index = make([]int, 256*256)
+	for i := 0; i < 256*256; i++ {
 		off := 4 + i*4
 		loc.index[i] = int(binary.LittleEndian.Uint32(data[off : off+4]))
 	}
 
-	nidx := (textoff - 4 - 1024 - 1024) / 8
+	nidx := (textoff - 4 - 262144) / 9
+	fmt.Println("nidx=", nidx)
 
 	loc.indexData1 = make([]uint32, nidx)
 	loc.indexData2 = make([]int, nidx)
 	loc.indexData3 = make([]int, nidx)
 
 	for i := 0; i < nidx; i++ {
-		off := 4 + 1024 + i*8
+		off := 4 + 262144 + i*9
 		loc.indexData1[i] = binary.BigEndian.Uint32(data[off : off+4])
 		loc.indexData2[i] = int(uint32(data[off+4]) | uint32(data[off+5])<<8 | uint32(data[off+6])<<16)
-		loc.indexData3[i] = int(data[off+7])
+		//fmt.Println("byte7:", uint32(data[off+7]))
+		//fmt.Println("byte8:", uint32(data[off+8]))
+		loc.indexData3[i] = int(uint32(data[off+7])<<8 | uint32(data[off+8]))
 	}
 	return
 }
@@ -165,6 +172,14 @@ func newLocationInfo(str []byte) *LocationInfo {
 			Region:  string(fields[1]),
 			City:    string(fields[2]),
 			Isp:     string(fields[4]),
+		}
+	case 13:
+		info = &LocationInfo{
+			Country: string(fields[0]),
+			Region:  string(fields[1]),
+			City:    string(fields[2]),
+			Isp:     string(fields[4]),
+			CountryCode:     string(fields[11]),
 		}
 	default:
 		panic("unexpected ip info:" + string(str))
