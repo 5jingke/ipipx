@@ -1,4 +1,4 @@
-package ip17mon
+package ip17monx
 
 import (
 	"bytes"
