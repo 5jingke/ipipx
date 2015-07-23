@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"net"
-	"fmt"
 )
 
 const Null = "N/A"
@@ -100,7 +99,6 @@ func (loc *Locator) FindByUint(ip uint32) (info *LocationInfo) {
 	}
 	idx := loc.findIndexOffset(ip, loc.index[ip>>16], end)
 	off := loc.indexData2[idx]
-	fmt.Println("found: idx=", idx, "off=", off, "->", loc.indexData3[idx])
 	return newLocationInfo(loc.textData[off : off+loc.indexData3[idx]])
 }
 
@@ -124,7 +122,6 @@ func (loc *Locator) findIndexOffset(ip uint32, start, end int) int {
 
 func (loc *Locator) init(data []byte) {
 	textoff := int(binary.BigEndian.Uint32(data[:4]))
-	fmt.Println("textoff=", textoff)
 
 	loc.textData = data[textoff-262144:]
 
@@ -135,7 +132,6 @@ func (loc *Locator) init(data []byte) {
 	}
 
 	nidx := (textoff - 4 - 262144) / 9
-	fmt.Println("nidx=", nidx)
 
 	loc.indexData1 = make([]uint32, nidx)
 	loc.indexData2 = make([]int, nidx)
@@ -145,8 +141,6 @@ func (loc *Locator) init(data []byte) {
 		off := 4 + 262144 + i*9
 		loc.indexData1[i] = binary.BigEndian.Uint32(data[off : off+4])
 		loc.indexData2[i] = int(uint32(data[off+4]) | uint32(data[off+5])<<8 | uint32(data[off+6])<<16)
-		//fmt.Println("byte7:", uint32(data[off+7]))
-		//fmt.Println("byte8:", uint32(data[off+8]))
 		loc.indexData3[i] = int(uint32(data[off+7])<<8 | uint32(data[off+8]))
 	}
 	return
