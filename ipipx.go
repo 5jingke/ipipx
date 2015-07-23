@@ -72,10 +72,10 @@ type Locator struct {
 }
 
 type LocationInfo struct {
-	Country string
-	Region  string
-	City    string
-	Isp     string
+	Country     string
+	Region      string
+	City        string
+	Isp         string
 	CountryCode string
 }
 
@@ -169,11 +169,11 @@ func newLocationInfo(str []byte) *LocationInfo {
 		}
 	case 13:
 		info = &LocationInfo{
-			Country: string(fields[0]),
-			Region:  string(fields[1]),
-			City:    string(fields[2]),
-			Isp:     string(fields[4]),
-			CountryCode:     string(fields[11]),
+			Country:     string(fields[0]),
+			Region:      string(fields[1]),
+			City:        string(fields[2]),
+			Isp:         string(fields[4]),
+			CountryCode: string(fields[11]),
 		}
 	default:
 		panic("unexpected ip info:" + string(str))
