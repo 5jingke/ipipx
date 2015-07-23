@@ -1,24 +1,24 @@
-[17mon](http://www.ipip.net/) IP location data for Golang (datx)
+[ipip.net](http://www.ipip.net/) IP location data for Golang (datx)
 ===
 
 ## 安装
 
-	go get -u github.com/chentao/ip17monx
+	go get -u github.com/chentao/ipipx
 
 ## 使用
 	import （
 		"fmt"
-		"github.com/chentao/ip17monx"
+		"github.com/chentao/ipipx"
 	）
 
 	func init() {
-		if err := ip17monx.Init("/path/to/datx/file"); err != nil {
+		if err := ipipx.Init("/path/to/datx/file"); err != nil {
 			panic(err)
 		}
 	}
 
 	func main() {
-		loc, err := ip17monx.Find("116.228.111.18")
+		loc, err := ipipx.Find("116.228.111.18")
 		if err != nil {
 			fmt.Println("err:", err)
 			return
@@ -28,4 +28,4 @@
 
 ## 许可证
 
-基于 [MIT](https://github.com/wangtuanjie/ip17mon/blob/master/LICENSE) 协议发布
+基于 [MIT](https://github.com/chentao/ipipx/blob/master/LICENSE) 协议发布
