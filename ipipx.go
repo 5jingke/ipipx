@@ -99,7 +99,7 @@ func (loc *Locator) Find(ipstr string) (info *LocationInfo, err error) {
 // Find locationInfo by uint32
 func (loc *Locator) FindByUint(ip uint32) (info *LocationInfo) {
 	end := len(loc.indexData1) - 1
-	if ip>>16 != 0xff {
+	if ip>>16 != 0xffff {
 		end = loc.index[(ip>>16)+1]
 	}
 	idx := loc.findIndexOffset(ip, loc.index[ip>>16], end)
@@ -136,7 +136,7 @@ func (loc *Locator) init(data []byte) {
 		loc.index[i] = int(binary.LittleEndian.Uint32(data[off : off+4]))
 	}
 
-	nidx := (textoff - 4 - 262144) / 9
+	nidx := (textoff - 4 - 262144 - 262144) / 9
 
 	loc.indexData1 = make([]uint32, nidx)
 	loc.indexData2 = make([]int, nidx)
