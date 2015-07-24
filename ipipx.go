@@ -24,6 +24,11 @@ func Init(dataFile string) (err error) {
 	return
 }
 
+func Update(dataFile string) (err error) {
+	std, err = NewLocator(dataFile)
+	return
+}
+
 // Init defaut locator with data
 func InitWithData(data []byte) {
 	if std != nil {
