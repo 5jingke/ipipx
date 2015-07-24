@@ -176,7 +176,7 @@ func newLocationInfo(str []byte) *LocationInfo {
 			CountryCode: string(fields[11]),
 		}
 	default:
-		panic("unexpected ip info:" + string(str))
+		//panic("unexpected ip info:" + string(str))
 	}
 
 	if len(info.Country) == 0 {
@@ -190,6 +190,9 @@ func newLocationInfo(str []byte) *LocationInfo {
 	}
 	if len(info.Isp) == 0 {
 		info.Isp = Null
+	}
+	if len(info.CountryCode) == 0 {
+		info.CountryCode = Null
 	}
 	return info
 }
