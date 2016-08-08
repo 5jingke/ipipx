@@ -82,6 +82,8 @@ type LocationInfo struct {
 	City        string
 	Isp         string
 	CountryCode string
+	Latitude    string
+	Longitude   string
 }
 
 // Find locationInfo by ip string
@@ -179,6 +181,8 @@ func newLocationInfo(str []byte) *LocationInfo {
 			City:        string(fields[2]),
 			Isp:         string(fields[4]),
 			CountryCode: string(fields[11]),
+			Latitude:    string(fields[5]),
+			Longitude:   string(fields[6]),
 		}
 	default:
 		//panic("unexpected ip info:" + string(str))
